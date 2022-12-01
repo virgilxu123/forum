@@ -29,41 +29,25 @@
         }else {
             $errors[] = 'The password field cannot be empty.';
         }
-        if(!empty($errors)) /*check for an empty array, if there are errors,
-        they're in this array (note the ! operator)*/
-        {
+        /*check for an empty array, if there are errors, they're in this array (note the ! operator)*/
+        if(!empty($errors)) { 
             echo 'Uh-oh.. a couple of fields are not filled in correctly..';
             echo '<ul>';
-            foreach($errors as $key => $value) /* walk through the array so
-            all the errors get displayed */
-            {
-            echo '<li>' . $value . '</li>'; /* this generates a nice error
-            list */
+            /* walk through the array so all the errors get displayed */
+            foreach($errors as $key => $value){
+                echo '<li>' . $value . '</li>'; /* this generates a nice error list */
             }
             echo '</ul>';
         }else {
             //the form has been posted without, so save it
             //notice the use of mysql_real_escape_string, keep everything safe!
             //also notice the sha1 function which hashes the password
-            $sql = "INSERT INTO
-            users(user_name, user_pass, user_email ,user_date,
-            user_level)
-            VALUES('" . mysql_real_escape_string($_POST['user_name']) . "',
-            '" . sha1($_POST['user_pass']) . "',
-            '" . mysql_real_escape_string($_POST['user_email']) . "',
-            NOW(),
-            0)";
-
-            $result = mysql_query($sql);
-            if(!$result) {
-                //something went wrong, display the error
-                echo 'Something went wrong while registering. Please try again
-                later.';
-                //echo mysql_error(); //debugging purposes, uncomment when needed
-            }else {
-                echo 'Successfully registered. You can now <a href="signin.php">
-                sign in</a> and start posting! :-)';
-            }
+            $stmt = $conn->prepare("INSERT INTO users(user_name, user_pass, user_email) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $_POST['user_name'], $_POST['user_pass'], $_POST['user_email']);
+            $stmt->execute();
+            
+            echo 'Successfully registered. You can now <a href="signin.php">
+            sign in</a> and start posting! :-)';
         }
     }
 
@@ -72,7 +56,7 @@
     <?php include 'common\headr.php' ?>
 
     <h3>Sign up</h3>
-    <form method="post" action="">
+    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
         <div  class="form-container">
             <div>Username: <input type="text" name="user_name" /></div>
             <div>Password: <input type="password" name="user_pass"></div>
