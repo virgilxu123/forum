@@ -12,13 +12,11 @@
         $errors = array(); /* declare the array for later use */
         if(isset($_POST['user_name'])) {
             //the user name exists
-            if(!ctype_alnum($_POST['user_name']))
-            {
-            $errors[] = 'The username can only contain letters and digits.';
+            if(!ctype_alnum($_POST['user_name'])){
+                $errors[] = 'The username can only contain letters and digits.';
             }
-            if(strlen($_POST['user_name']) > 30)
-            {
-            $errors[] = 'The username cannot be longer than 30 characters.';
+            if(strlen($_POST['user_name']) > 30){
+                $errors[] = 'The username cannot be longer than 30 characters.';
             }
         }else {
             $errors[] = 'The username field must not be empty.';
@@ -75,11 +73,13 @@
 
     <h3>Sign up</h3>
     <form method="post" action="">
-        Username: <input type="text" name="user_name" />
-        Password: <input type="password" name="user_pass">
-        Password again: <input type="password" name="user_pass_check">
-        E-mail: <input type="email" name="user_email">
-        <input type="submit" value="Add category" />
+        <div  class="form-container">
+            <div>Username: <input type="text" name="user_name" /></div>
+            <div>Password: <input type="password" name="user_pass"></div>
+            <div>Password again: <input type="password" name="user_pass_check"></div>
+            <div>E-mail: <input type="email" name="user_email"></div>
+            <div><input type="submit" value="Add category" /></div>     
+        </div>   
     </form>
 
     <?php include 'common\footer.php' ?>

@@ -17,6 +17,11 @@ body {
     text-align: left;
     width: 100%; /* fill up the entire div */
     }
+.form-container {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    row-gap: 15px;
+}
 #menu {
     float: left;
     border: 1px solid #000;
