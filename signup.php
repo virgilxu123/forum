@@ -1,20 +1,9 @@
 <?php
     //signup.php
     include 'api\connection.php';
-    include 'common\headr.php';
-    echo '<h3>Sign up</h3>';
-    if($_SERVER['REQUEST_METHOD'] != 'POST'){
-        /*the form hasn't been posted yet, display it
-        note that the action="" will cause the form to post to the same
-        page it is on */
-        echo '<form method="post" action="">
-        Username: <input type="text" name="user_name" />
-        Password: <input type="password" name="user_pass">
-        Password again: <input type="password" name="user_pass_check">
-        E-mail: <input type="email" name="user_email">
-        <input type="submit" value="Add category" />
-        </form>';
-    }else {
+    
+    if($_SERVER['REQUEST_METHOD'] == 'POST'){
+
         /* so, the form has been posted, we'll process the data in three steps:
         1. Check the data
         2. Let the user refill the wrong fields (if necessary)
@@ -79,5 +68,18 @@
             }
         }
     }
-    include 'common\footer.php';
+
 ?>
+
+    <?php include 'common\headr.php' ?>
+
+    <h3>Sign up</h3>
+    <form method="post" action="">
+        Username: <input type="text" name="user_name" />
+        Password: <input type="password" name="user_pass">
+        Password again: <input type="password" name="user_pass_check">
+        E-mail: <input type="email" name="user_email">
+        <input type="submit" value="Add category" />
+    </form>
+
+    <?php include 'common\footer.php' ?>
