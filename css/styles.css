@@ -19,7 +19,7 @@ body {
     box-shadow: 3px 6px 16px -1px rgba(0,0,0,0.75);
     -webkit-box-shadow: 3px 6px 16px -1px rgba(0,0,0,0.75);
     -moz-box-shadow: 3px 6px 16px -1px rgba(0,0,0,0.75);
-    border-radius: 0 0 5px 5px;
+    border-radius: 0 0 15px 15px;
     }
 .form-container {
     display: grid;
@@ -31,6 +31,16 @@ body {
         padding: 3px 5px;
         margin-top: 5px;
         border-radius: 7px;
+    }
+    .signup {
+        background-color: #00728B;
+        border: 1px solid #032472;
+        color: #FFF;
+        font-family: Arial;
+    }
+    .signup:hover {
+        background-color: #009FC1;
+        cursor: pointer;
     }
 #menu {
     float: left;
@@ -44,6 +54,8 @@ body {
     background-color: #FFF;
     text-align: left;
     font-size: 85%;
+    border-radius: 15px 15px 0 0;
+
     }
 #menu a:hover {
     background-color: #009FC1;
@@ -84,12 +96,13 @@ h1, #footer {
     }
 h3 {margin: 0; padding: 0;}
     /* Menu styles */
-    .item {
+.item {
     background-color: #00728B;
     border: 1px solid #032472;
     color: #FFF;
     font-family: Arial;
     padding: 3px;
+    border-radius: 5px;
     text-decoration: none;
     }
 .leftpart {

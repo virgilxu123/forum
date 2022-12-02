@@ -62,7 +62,7 @@
             <div>Password: <input type="password" name="user_pass"></div>
             <div>Password again: <input type="password" name="user_pass_check"></div>
             <div>E-mail: <input type="email" name="user_email"></div>
-            <div><input type="submit" value="Add category" /></div>     
+            <div><input type="submit" value="Sign up" class="signup"/></div>     
         </div>   
     </form>
 
