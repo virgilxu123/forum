@@ -1,6 +1,8 @@
 <?php
     //signup.php
     include 'api\connection.php';
+
+    $message = "";
     
     if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
@@ -31,23 +33,24 @@
         }
         /*check for an empty array, if there are errors, they're in this array (note the ! operator)*/
         if(!empty($errors)) { 
-            echo 'Uh-oh.. a couple of fields are not filled in correctly..';
-            echo '<ul>';
+            $message = "Uh-oh.. a couple of fields are not filled in correctly..\n";
+
             /* walk through the array so all the errors get displayed */
             foreach($errors as $key => $value){
-                echo '<li>' . $value . '</li>'; /* this generates a nice error list */
+                $message .= $value."\n"; /* this generates a nice error list */
             }
-            echo '</ul>';
+
         }else {
             //the form has been posted without, so save it
             //notice the use of mysql_real_escape_string, keep everything safe!
             //also notice the sha1 function which hashes the password
+            $password = password_hash($_POST['user_pass'], PASSWORD_DEFAULT);
             $stmt = $conn->prepare("INSERT INTO users(user_name, user_pass, user_email) VALUES (?, ?, ?)");
-            $stmt->bind_param("sss", $_POST['user_name'], $_POST['user_pass'], $_POST['user_email']);
+            $stmt->bind_param("sss", $_POST['user_name'], $password, $_POST['user_email']);
             $stmt->execute();
             
-            echo 'Successfully registered. You can now <a href="signin.php">
-            sign in</a> and start posting! :-)';
+            $message = 'Successfully registered. You can now <a href="signin.php"> sign in</a> and start posting! :-)';
+
         }
     }
 
@@ -63,7 +66,8 @@
             <div>Password again: <input type="password" name="user_pass_check"></div>
             <div>E-mail: <input type="email" name="user_email"></div>
             <div><input type="submit" value="Sign up" class="signup"/></div>     
-        </div>   
+        </div>
+        <span><?php echo $message; ?></span>  
     </form>
 
     <?php include 'common\footer.php' ?>
