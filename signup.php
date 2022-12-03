@@ -1,19 +1,12 @@
 <?php
     //signup.php
-    include 'api\connection.php';
+    require_once 'api\connection.php';
 
     $message = "";
     
     if($_SERVER['REQUEST_METHOD'] == 'POST'){
-
-        /* so, the form has been posted, we'll process the data in three steps:
-        1. Check the data
-        2. Let the user refill the wrong fields (if necessary)
-        3. Save the data
-        */
-        $errors = array(); /* declare the array for later use */
-        if(isset($_POST['user_name'])) {
-            //the user name exists
+        $errors = array();
+        if(!empty($_POST['user_name'])) {
             if(!ctype_alnum($_POST['user_name'])){
                 $errors[] = 'The username can only contain letters and digits.';
             }
@@ -24,26 +17,22 @@
             $errors[] = 'The username field must not be empty.';
         }
 
-        if(isset($_POST['user_pass'])){
+        if(!empty($_POST['user_pass'])) {
             if($_POST['user_pass'] != $_POST['user_pass_check']) {
                 $errors[] = 'The two passwords did not match.';
             }
         }else {
             $errors[] = 'The password field cannot be empty.';
         }
-        /*check for an empty array, if there are errors, they're in this array (note the ! operator)*/
         if(!empty($errors)) { 
-            $message = "Uh-oh.. a couple of fields are not filled in correctly..\n";
+            $message = "Uh-oh.. a couple of fields are not filled in correctly..<br>";
 
-            /* walk through the array so all the errors get displayed */
             foreach($errors as $key => $value){
-                $message .= $value."\n"; /* this generates a nice error list */
+                $message .= "$value<br>";
             }
 
         }else {
-            //the form has been posted without, so save it
-            //notice the use of mysql_real_escape_string, keep everything safe!
-            //also notice the sha1 function which hashes the password
+
             $password = password_hash($_POST['user_pass'], PASSWORD_DEFAULT);
             $stmt = $conn->prepare("INSERT INTO users(user_name, user_pass, user_email) VALUES (?, ?, ?)");
             $stmt->bind_param("sss", $_POST['user_name'], $password, $_POST['user_email']);

@@ -11,65 +11,51 @@
         exit;
     }else {
         if($_SERVER['REQUEST_METHOD'] == 'POST'){
-
-            if(!isset($_POST['user_name'])){
-                $message .= "The username field must not be empty. \n";
+            $errors = array();
+            if(empty($_POST['user_name'])){
+                $errors[] = "The username field must not be empty.";
             }
-            if(!isset($_POST['user_pass'])){
-                $errors[] = 'The password field must not be empty.';
+            if(empty($_POST['user_pass'])){
+                $errors[] = "The password field must not be empty.";
             }
 
             if(!empty($errors)) {
-                $message = "Uh-oh.. a couple of fields are not filled in correctly..\n";
+                $message = "<br>Uh-oh.. a couple of fields are not filled in correctly..<br>";
 
                 foreach($errors as $key => $value) {
-                    $message .=  $value ."\n"; /* this generates a nice
-                    error list */
+                    $message .=  "$value .<br>"; 
                 }
             }else {
-                //the form has been posted without errors, so save it
-                //notice the use of mysql_real_escape_string, keep everything safe!
-                //also notice the sha1 function which hashes the password
 
                 $sql = "SELECT user_id, user_name, user_pass FROM users WHERE user_name = ?";
                 if($stmt = $conn->prepare($sql)){
-                    // Bind variables to the prepared statement as parameters
+
                     $stmt->bind_param("s", $param_username);
-                    // Set parameters
                     $param_username = trim($_POST["user_name"]);
-                    // Attempt to execute the prepared statement
+ 
                     if($stmt->execute()){
-                        // Store result
+
                         $stmt->store_result();
-                        // Check if username exists, if yes then verify password
+
                         if($stmt->num_rows() == 1){
-                            // Bind result variables
                             $stmt->bind_result($user_id, $user_name, $hashed_password);
                             if($stmt->fetch()){
                                 if(password_verify($_POST['user_pass'], $hashed_password)){
-                                    // Password is correct, so start a new session
-                                    session_start();
-                                    // Store data in session variables
-
                                     $_SESSION["loggedin"] = true;
                                     $_SESSION["id"] = $user_id;
-                                    $_SESSION["name"] = $user_name;
+                                    $_SESSION["user_name"] = $user_name;
                                     // Redirect user to welcome page
-                                    header("location: create_cat.php");
-
+                                    $message = '<br>Welcome, ' . $_SESSION['user_name'] . '.<a href="index.php">Proceed to the forum overview</a>.';
                                 } else{
-                                    // Password is not valid, display a generic error message
                                     $message = "Invalid username or password.";
                                 }
                             }
                         } else{
-                            // Username doesn't exist, display a generic error message
                             $message = "Student ID not yet register.";
                         }
                     } else{
                     echo "Oops! Something went wrong. Please try again later.";
                     }
-                    // Close statement
                     $stmt->close();
                 }
             }
@@ -93,7 +79,7 @@
         Username: <input type="text" name="user_name" />
         Password: <input type="password" name="user_pass">
         <input type="submit" value="Sign in" />
-        <span><?php echo $message; ?></span>
+        <span class="prompt"><?php echo $message; ?></span>
     </form>
     
 
