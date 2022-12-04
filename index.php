@@ -30,5 +30,5 @@
     }
     $conn->close();
 
-    include 'common/footer.php';x`
+    include 'common/footer.php';
 ?>

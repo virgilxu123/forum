@@ -18,9 +18,9 @@
             <div id="userbar">
                 <?php
                 if (isset($_SESSION['signed_in'])) {
-                    echo 'Hello ' . $_SESSION['user_name'] . '. Not you? <a href="signout.php">Sign out</a>';
+                    echo 'Hello ' . $_SESSION['user_name'] . '. Not you? <a class="log" href="signout.php">Sign out</a>';
                 } else {
-                    echo '<a href="signin.php">Sign in</a> or <a href="signup.php">create an account</a>.';
+                    echo '<a class="log" href="signin.php">Sign in</a> or <a class="log" href="signup.php">create an account</a>.';
                 }
                 ?>
             </div>
