@@ -56,7 +56,7 @@
             <div>E-mail: <input type="email" name="user_email"></div>
             <div><input type="submit" value="Sign up" class="signup"/></div>     
         </div>
-        <span><?php echo $message; ?></span>  
+        <span class="prompt"><?php echo $message; ?></span>  
     </form>
 
     <?php include 'common\footer.php' ?>

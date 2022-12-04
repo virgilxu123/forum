@@ -46,8 +46,7 @@ body {
     float: left;
     border: 1px solid #000;
     border-bottom: none; /* avoid a double border */
-    clear: both; /* clear:both makes sure the content div
-    doesn't float next to this one but stays under it */
+    clear: both;
     width:100%;
     height:20px;
     padding: 0 30px;
@@ -128,5 +127,4 @@ textarea {
     }
 .prompt {
     font-size: 12px;
-    color: #B40E1F;
 }

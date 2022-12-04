@@ -2,8 +2,6 @@
     //signin.php
     include 'api/connection.php';
 
-   
-    session_start();
     $message = "";
     //first, check if the user is already signed in. If that is the case, there is no need to display this page
     if(isset($_SESSION['signed_in']) && $_SESSION['signed_in'] == true){
@@ -27,7 +25,7 @@
                 }
             }else {
 
-                $sql = "SELECT user_id, user_name, user_pass FROM users WHERE user_name = ?";
+                $sql = "SELECT user_id, user_name, user_pass, user_level FROM users WHERE user_name = ?";
                 if($stmt = $conn->prepare($sql)){
 
                     $stmt->bind_param("s", $param_username);
@@ -38,20 +36,21 @@
                         $stmt->store_result();
 
                         if($stmt->num_rows() == 1){
-                            $stmt->bind_result($user_id, $user_name, $hashed_password);
+                            $stmt->bind_result($user_id, $user_name, $hashed_password, $user_level);
                             if($stmt->fetch()){
                                 if(password_verify($_POST['user_pass'], $hashed_password)){
                                     $_SESSION["loggedin"] = true;
                                     $_SESSION["id"] = $user_id;
                                     $_SESSION["user_name"] = $user_name;
-                                    // Redirect user to welcome page
+                                    $_SESSION['user_level'] = $user_level;
+                                    session_start();
                                     $message = '<br>Welcome, ' . $_SESSION['user_name'] . '.<a href="index.php">Proceed to the forum overview</a>.';
                                 } else{
-                                    $message = "Invalid username or password.";
+                                    $message = "<br>Invalid username or password.";
                                 }
                             }
                         } else{
-                            $message = "Student ID not yet register.";
+                            $message = "<br>Student ID not yet register.";
                         }
                     } else{
                     echo "Oops! Something went wrong. Please try again later.";
