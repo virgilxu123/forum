@@ -1,88 +1,79 @@
 <?php
-    //signin.php
-    include 'api/connection.php';
+//signin.php
+include 'connect.php';
+include 'header.php';
 
-    $message = "";
-    //first, check if the user is already signed in. If that is the case, there is no need to display this page
-    if(isset($_SESSION['signed_in']) && $_SESSION['signed_in'] == true){
-        header("location: create_cat.php");
-        exit;
-    }else {
-        if($_SERVER['REQUEST_METHOD'] == 'POST'){
-            $errors = array();
-            if(empty($_POST['user_name'])){
-                $errors[] = "The username field must not be empty.";
+echo '<h3>Sign in</h3>';
+
+//first, check if the user is already signed in. If that is the case, there is no need to display this page
+if (isset($_SESSION['signed_in']) && $_SESSION['signed_in'] == true) {
+    echo 'You are already signed in, you can <a href="signout.php">sign out</a> if you want.';
+} else {
+    if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+        /*the form hasn't been posted yet, display it
+          note that the action="" will cause the form to post to the same page it is on */
+        echo '<form method="post" action="">
+            Username: <input type="text" name="user_name" />
+            Password: <input type="password" name="user_pass">
+            <input type="submit" value="Sign in" />
+         </form>';
+    } else {
+        /* so, the form has been posted, we'll process the data in three steps:
+            1.  Check the data
+            2.  Let the user refill the wrong fields (if necessary)
+            3.  Varify if the data is correct and return the correct response
+        */
+        $errors = array(); /* declare the array for later use */
+
+        if (!isset($_POST['user_name'])) {
+            $errors[] = 'The username field must not be empty.';
+        }
+
+        if (!isset($_POST['user_pass'])) {
+            $errors[] = 'The password field must not be empty.';
+        }
+
+        if (!empty($errors)) /*check for an empty array, if there are errors, they're in this array (note the ! operator)*/ {
+            echo 'Uh-oh.. a couple of fields are not filled in correctly..';
+            echo '<ul>';
+            foreach ($errors as $key => $value) /* walk through the array so all the errors get displayed */ {
+                echo '<li>' . $value . '</li>'; /* this generates a nice error list */
             }
-            if(empty($_POST['user_pass'])){
-                $errors[] = "The password field must not be empty.";
-            }
+            echo '</ul>';
+        } else {
+            $sql = "SELECT user_id, user_name,user_pass, user_level FROM users WHERE user_name = ?";
 
-            if(!empty($errors)) {
-                $message = "<br>Uh-oh.. a couple of fields are not filled in correctly..<br>";
+            if ($stmt = $mysqli->prepare($sql)) {
+                $stmt->bind_param('s', $param_username);
+                $param_username = $_POST['user_name'];
 
-                foreach($errors as $key => $value) {
-                    $message .=  "$value .<br>"; 
-                }
-            }else {
+                if ($stmt->execute()) {
+                    $stmt->store_result();
 
-                $sql = "SELECT user_id, user_name, user_pass, user_level FROM users WHERE user_name = ?";
-                if($stmt = $conn->prepare($sql)){
+                    if ($stmt->num_rows == 1) {
+                        $stmt->bind_result($id, $username, $user_pass, $user_level);
+                        $stmt->fetch();
 
-                    $stmt->bind_param("s", $param_username);
-                    $param_username = trim($_POST["user_name"]);
- 
-                    if($stmt->execute()){
+                        if (password_verify($_POST['user_pass'], $user_pass)) {
+                            $_SESSION['signed_in'] = true;
+                            $_SESSION['user_id'] = $id;
+                            $_SESSION['user_name'] = $username;
+                            $_SESSION['user_level'] = $user_level;
 
-                        $stmt->store_result();
-
-                        if($stmt->num_rows() == 1){
-                            $stmt->bind_result($user_id, $user_name, $hashed_password, $user_level);
-                            if($stmt->fetch()){
-                                if(password_verify($_POST['user_pass'], $hashed_password)){
-                                    $_SESSION["loggedin"] = true;
-                                    $_SESSION["id"] = $user_id;
-                                    $_SESSION["user_name"] = $user_name;
-                                    $_SESSION['user_level'] = $user_level;
-                                    session_start();
-                                    $message = '<br>Welcome, ' . $_SESSION['user_name'] . '.<a href="index.php">Proceed to the forum overview</a>.';
-                                } else{
-                                    $message = "<br>Invalid username or password.";
-                                }
-                            }
-                        } else{
-                            $message = "<br>Student ID not yet register.";
+                            echo 'Welcome, ' . $_SESSION['user_name'] . '. <a href="index.php">Proceed to the forum overview</a>.';
+                        } else {
+                            echo 'You have supplied a wrong user/password combination. Please try again.';
                         }
-                    } else{
-                    echo "Oops! Something went wrong. Please try again later.";
+                    } else {
+                        echo 'You have supplied a wrong user/password combination. Please try again.';
                     }
-                    $stmt->close();
+                } else {
+                    echo 'Something went wrong while signing in. Please try again later.';
                 }
             }
         }
     }
+}
 
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Sign Up</title>
-    <style>
-    </style>
-</head>
-<body>
-    <?php include 'common\headr.php' ?>
 
-    <h3>Sign in</h3>
-    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
-        Username: <input type="text" name="user_name" />
-        Password: <input type="password" name="user_pass">
-        <input type="submit" value="Sign in" />
-        <span class="prompt"><?php echo $message; ?></span>
-    </form>
-    
-
-    <?php include 'common\footer.php' ?>
-    
-</body>
-</html>
+include 'footer.php';
